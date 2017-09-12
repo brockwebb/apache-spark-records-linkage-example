@@ -1,0 +1,52 @@
+---
+title: "data_transform"
+author: "brockwebb45@gmail.com"
+date: "9/8/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Readme
+This document takes the "raw" data from FakeNameGenerator.com and transforms it into input for the Spark example. 
+
+The output data files will be available in the data directory, but this is informational on what was done.
+
+The general idea for a records linkage is that we have two files with records we might want to link together. Therefore, we will take the raw file of names and information and split part of it off.
+
+##Initial Split and add duplicates to find
+```{r}
+#main input file
+afile <- read.csv("./data/FakeNameGenerator.com_Input.csv")
+
+#duplicates file
+adupe <- read.csv("./data/duplicates.csv")
+
+#add the dublicates we will create
+afile<-rbind(afile,adupe)
+
+#create the "master file" and add duplicates to extract later
+masterfile <- subset(afile, select=-c(EmailAddress, TelephoneNumber))
+bdupe <- subset(adupe, select=-c(EmailAddress, TelephoneNumber))
+
+for(i in 1:4){
+  masterfile <- rbind(masterfile,bdupe)  
+}
+
+#Create a subset to generate the "link file"
+linkfile <- subset(afile, select=c(GivenName,MiddleInitial,Surname, StreetAddress,City,State,ZipCode,EmailAddress,TelephoneNumber, Birthday))
+
+#create a random sample of the data for the link file then remove 15 random birthdays
+sample_ind <- sample(seq_len(nrow(linkfile)), size = 15000, replace=FALSE )
+sublinkfile <- linkfile[sample_ind, ]
+
+sublinkfile[sample(1:nrow(sublinkfile),15),10]<-NA
+
+write.csv(masterfile, file="./data/MasterFile.csv",row.names = FALSE)
+write.csv(sublinkfile, file="./data/LinkFile.csv",row.names = FALSE)
+
+```
+
+
