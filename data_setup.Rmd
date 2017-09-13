@@ -44,9 +44,11 @@ sublinkfile <- linkfile[sample_ind, ]
 
 sublinkfile[sample(1:nrow(sublinkfile),15),10]<-NA
 
-write.csv(masterfile, file="./data/MasterFile.csv",row.names = FALSE)
-write.csv(sublinkfile, file="./data/LinkFile.csv",row.names = FALSE)
+write.csv(masterfile, file="./data/masterfile.csv",row.names = FALSE)
+write.csv(sublinkfile, file="./data/linkfile.csv",row.names = FALSE)
 
 ```
 
+##Link to databricks community edition notebook with the rest of the example:
+https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/5725935662784394/4024267693193179/8581541155467433/latest.html
 
